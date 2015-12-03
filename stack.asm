@@ -116,5 +116,3 @@ print_pop:
 	lw $fp, 16($sp)
 	addiu $sp, $sp, 32
 	jr $ra
-	
-	

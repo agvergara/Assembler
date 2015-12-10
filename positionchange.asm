@@ -1,4 +1,5 @@
 #ISAM 9 Dec 2015
+#NOTE TO SELF, DONT CHANGE THE VALUE OF $S REGISTER IN FUNCTION CALLS
 .data
 	#With length 7, so 1 integer = 4 bytes -> 7*4 = 28 bytes
 	array: .word 1:7
@@ -31,6 +32,8 @@ main:
 	#$a2 contains the int to find.
 	move $a2, $v0
 	la $a0, array
+	#Want to get the END of the  array just in case it will not overflow
+	addi $s0, $a0, 28
 	jal find	
 	beq $v0, -1, finnish
 	move $a0, $v0
@@ -58,8 +61,7 @@ loop_array:
 end_loop:
 	jr $ra	
 	
-find:	#Want to get the END of the  array just in case it will not overflow
-	addi $s0, $a0, 28
+find:	
 	mul $a1, $a1, 4
 	add $a0, $a0, $a1
 	
@@ -100,21 +102,19 @@ change:
 end_change:
 	jr $ra
 	
-print:	move $s0, $a1
-
-print_loop:subu $sp, $sp, 32
+print:	subu $sp, $sp, 32
 	sw $ra, 20($sp)
 	sw $fp, 16($sp)
 	addu $fp, $sp, 28
 	
-	lw $a0, 0($s0)
+	lw $a0, 0($a1)
 	beq $a0, -1, end_print
 	li $v0, 1
 	syscall
 	
-	beq $s0, $a2, end_print
-	addi $s0, $s0, 4
-	jal print_loop
+	beq $a1, $a2, end_print
+	addi $a1, $a1, 4
+	jal print
 	
 end_print:lw $ra, 20($sp)
 	lw $fp, 16($sp)
